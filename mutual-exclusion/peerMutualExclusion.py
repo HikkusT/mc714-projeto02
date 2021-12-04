@@ -51,7 +51,7 @@ i = 0
 #     i += 1
 
 print(hasKey)
-while i < 3000:
+while i < 500:
     if (hasKey):
         sum_1_variable()
         i+= 1
