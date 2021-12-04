@@ -16,6 +16,7 @@ import urllib.request
 server_address = sys.argv[1]
 next_peer_address = sys.argv[2]
 external_address = urllib.request.urlopen('https://api.ipify.org').read().decode('utf8')
+external_address = "http://" + external_address + ":8000/"
 
 hasKey = True if (external_address > next_peer_address) else False
 
