@@ -22,5 +22,5 @@ server.register_function(set_common_variable)
 server_thread = threading.Thread(target=server.serve_forever)
 server_thread.start()
 
-time.sleep(15)
+time.sleep(20)
 print("Valor esperado: ", set_count, "Valor real: ", common_variable)
