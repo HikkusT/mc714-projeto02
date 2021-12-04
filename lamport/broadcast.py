@@ -30,7 +30,7 @@ def send_event(hosts):
         host.receive_event(current_time, id)
     
 
-server = SimpleXMLRPCServer(("localhost", int(sys.argv[3])), allow_none=True, logRequests=False) 
+server = SimpleXMLRPCServer(("", int(sys.argv[3])), allow_none=True, logRequests=False) 
 server.register_function(receive_event)
 server_thread = threading.Thread(target=server.serve_forever)
 server_thread.start()
