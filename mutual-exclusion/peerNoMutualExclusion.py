@@ -2,9 +2,7 @@ from xmlrpc import server
 from xmlrpc.server import SimpleXMLRPCServer
 import xmlrpc.client
 import sys
-import time
 import threading
-import random
 import urllib.request
 
 
@@ -47,12 +45,12 @@ server =  xmlrpc.client.ServerProxy(server_address)
 
 i = 0
 
-# while i < 500:
-#     sum_1_variable()
-#     i += 1
-
 while i < 500:
-    if (hasKey):
-        sum_1_variable()
-        i+= 1
-        pass_key()
+    sum_1_variable()
+    i += 1
+
+# while i < 500:
+#     if (hasKey):
+#         sum_1_variable()
+#         i+= 1
+#         pass_key()
