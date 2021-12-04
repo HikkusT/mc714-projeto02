@@ -45,7 +45,7 @@ server =  xmlrpc.client.ServerProxy(server_address)
 
 i = 0
 
-while i < 250:
+while i < 2500:
     sum_1_variable()
     i += 1
 
