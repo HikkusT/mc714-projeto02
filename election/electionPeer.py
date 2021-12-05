@@ -19,7 +19,8 @@ def start_election():
             anyone_more_powerfull_answered = all_peers_list[i].receive_election_request()
             in_the_middle_of_election = False
             return
-        except:
+        except Exception as e:
+            print(e)
             print("Peer", i, "is down.")
     
     in_the_middle_of_election = False
