@@ -11,12 +11,15 @@ import time
 
 def start_election():
     global in_the_middle_of_election
+    if in_the_middle_of_election:
+        return
+
     in_the_middle_of_election = True
     print("\nPeer", local_peer_index, "is starting an election.")
     anyone_more_powerfull_answered = False
     for i in range(local_peer_index + 1, len(all_peers_list)):
         try:
-            print("About to send election request")
+            print("About to send receive election request")
             anyone_more_powerfull_answered = all_peers_list[i].receive_election_request()
             in_the_middle_of_election = False
             print("sent receive election request")
@@ -33,8 +36,7 @@ def receive_election_request():
     try:
         return True
     finally:
-        if not in_the_middle_of_election:
-            start_election()
+        start_election()
 
 def announce_as_leader():
     print("Annoucing me as the leader.")
