@@ -61,7 +61,7 @@ i = 0
 #     sum_1_variable()
 #     i += 1
 
-while i < 600:
+while True:
     if (hasKey):
         sum_1_variable()
         i+= 1
