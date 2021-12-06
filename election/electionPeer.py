@@ -12,32 +12,35 @@ import time
 
 def start_election():
     global in_the_middle_of_election
-    if in_the_middle_of_election:
-        return
+    with lock:
+        if in_the_middle_of_election:
+            return
+        in_the_middle_of_election = True
 
-    in_the_middle_of_election = True
+   
     print("\nPeer", local_peer_index, "is starting an election.")
-    anyone_more_powerfull_answered = False
     for i in range(local_peer_index + 1, len(all_peers_list)):
         try:
             print("About to send receive election request")
-            anyone_more_powerfull_answered = all_peers_list[i].receive_election_request()
-            in_the_middle_of_election = False
+            with communication_lock:
+                all_peers_list[i].receive_election_request()
+            with lock:
+                in_the_middle_of_election = False
             print("sent receive election request")
             return
         except Exception as e:
             print(e)
             print("Peer", i, "is down.")
     
-    in_the_middle_of_election = False
+    with lock:
+        in_the_middle_of_election = False
     print()
     announce_as_leader()
 
 def receive_election_request():
-    try:
-        return True
-    finally:
-        start_election()
+    requested_election_thread = threading.Thread(target = start_election)
+    requested_election_thread.start()
+    return True
 
 def announce_as_leader():
     print("Annoucing me as the leader.")
@@ -93,20 +96,20 @@ print("I'm peer number", local_peer_index, ".")
 print_all_peers_ordered_list()
 leader_index = len(all_peers_list) - 1
 
-lock = threading.Lock
+lock = threading.Lock()
+communication_lock = threading.Lock()
 
 time.sleep(5)
 
 start_election()
-
 
 while True:
     time.sleep(5)
     if (leader_index != local_peer_index):
         try:
             print("About to send status request.")
-            
-            all_peers_list[leader_index].receive_status_request()
+            with communication_lock:
+                all_peers_list[leader_index].receive_status_request()
             print("\nPeer", leader_index, "is ok.")
         except:
             print("\nPeer", leader_index, "found dead at the scene.\n")
