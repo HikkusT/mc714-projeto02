@@ -26,10 +26,7 @@ def start_election():
                 print(e)
                 print("Peer", i, "is down.")
         
-        
-        print()
-        in_the_middle_of_an_election = False
-        announce_as_leader()
+    announce_as_leader()
 
 def receive_election_request():
     try:
@@ -39,18 +36,21 @@ def receive_election_request():
             start_election()
 
 def announce_as_leader():
-    print("Annoucing me as the leader.")
-    global leader_index
-    leader_index = local_peer_index
-    for i in range(len(all_peers_list)):
-        if i != local_peer_index:
-            try:
-                print("About to send leader announcement request")
-                
-                all_peers_list[i].receive_leader_announcement(local_peer_index)
-                print("Peer", i, "acknowledge your power.")
-            except:
-                print("Peer", i, "is not alive to acknowledge your leadership.")
+    with lock:
+        print("\nAnnoucing me as the leader.")
+        global leader_index
+        leader_index = local_peer_index
+        for i in range(len(all_peers_list)):
+            if i != local_peer_index:
+                try:
+                    print("About to send leader announcement request")
+                    all_peers_list[i].receive_leader_announcement(local_peer_index)
+                    print("Peer", i, "acknowledge your power.")
+                except:
+                    print("Peer", i, "is not alive to acknowledge your leadership.")
+
+        in_the_middle_of_an_election = False
+
 
 def receive_leader_announcement(new_leader_index):
     global leader_index
@@ -97,7 +97,6 @@ lock = threading.Lock()
 time.sleep(5)
 
 start_election()
-
 
 while True:
     time.sleep(5)
