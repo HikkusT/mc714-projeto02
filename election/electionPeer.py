@@ -92,7 +92,7 @@ print("I'm peer number", local_peer_index, ".")
 print_all_peers_ordered_list()
 leader_index = len(all_peers_list) - 1
 
-lock = threading.Lock
+lock = threading.Lock()
 
 time.sleep(5)
 
