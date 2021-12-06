@@ -12,45 +12,39 @@ import time
 
 def start_election():
     with lock:
-        global in_the_middle_of_an_election
-        in_the_middle_of_an_election = True
         print("\nPeer", local_peer_index, "is starting an election.")
         for i in range(local_peer_index + 1, len(all_peers_list)):
             try:
                 print("About to send receive election request")
                 all_peers_list[i].receive_election_request()
                 print("sent receive election request")
-                in_the_middle_of_an_election = False
                 return
             except Exception as e:
                 print(e)
                 print("Peer", i, "is down.")
         
-    announce_as_leader()
+        print()
+        announce_as_leader()
 
 def receive_election_request():
     try:
         return True
     finally:
-        if not in_the_middle_of_an_election:
-            start_election()
+        start_election()
 
 def announce_as_leader():
-    with lock:
-        print("\nAnnoucing me as the leader.")
-        global leader_index
-        leader_index = local_peer_index
-        for i in range(len(all_peers_list)):
-            if i != local_peer_index:
-                try:
-                    print("About to send leader announcement request")
-                    all_peers_list[i].receive_leader_announcement(local_peer_index)
-                    print("Peer", i, "acknowledge your power.")
-                except:
-                    print("Peer", i, "is not alive to acknowledge your leadership.")
+    print("Annoucing me as the leader.")
+    global leader_index
+    leader_index = local_peer_index
+    for i in range(len(all_peers_list)):
+        if i != local_peer_index:
+            try:
+                print("About to send leader announcement request")
 
-        in_the_middle_of_an_election = False
-
+                all_peers_list[i].receive_leader_announcement(local_peer_index)
+                print("Peer", i, "acknowledge your power.")
+            except:
+                print("Peer", i, "is not alive to acknowledge your leadership.")
 
 def receive_leader_announcement(new_leader_index):
     global leader_index
@@ -90,13 +84,13 @@ all_peers_list = [xmlrpc.client.ServerProxy(address) for address in all_peers_ad
 print("I'm peer number", local_peer_index, ".")
 print_all_peers_ordered_list()
 leader_index = len(all_peers_list) - 1
-in_the_middle_of_an_election = False
 
 lock = threading.Lock()
 
 time.sleep(5)
 
 start_election()
+
 
 while True:
     time.sleep(5)
