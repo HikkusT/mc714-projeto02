@@ -11,20 +11,27 @@ import time
 # 1 -> peer adress list
 
 def start_election():
-    with lock:
-        print("\nPeer", local_peer_index, "is starting an election.")
-        for i in range(local_peer_index + 1, len(all_peers_list)):
-            try:
-                print("About to send receive election request")
-                all_peers_list[i].receive_election_request()
-                print("sent receive election request")
-                return
-            except Exception as e:
-                print(e)
-                print("Peer", i, "is down.")
-        
-        print()
-        announce_as_leader()
+    global in_the_middle_of_election
+    if in_the_middle_of_election:
+        return
+
+    in_the_middle_of_election = True
+    print("\nPeer", local_peer_index, "is starting an election.")
+    anyone_more_powerfull_answered = False
+    for i in range(local_peer_index + 1, len(all_peers_list)):
+        try:
+            print("About to send receive election request")
+            anyone_more_powerfull_answered = all_peers_list[i].receive_election_request()
+            in_the_middle_of_election = False
+            print("sent receive election request")
+            return
+        except Exception as e:
+            print(e)
+            print("Peer", i, "is down.")
+    
+    in_the_middle_of_election = False
+    print()
+    announce_as_leader()
 
 def receive_election_request():
     try:
@@ -40,7 +47,7 @@ def announce_as_leader():
         if i != local_peer_index:
             try:
                 print("About to send leader announcement request")
-                
+
                 all_peers_list[i].receive_leader_announcement(local_peer_index)
                 print("Peer", i, "acknowledge your power.")
             except:
@@ -80,12 +87,13 @@ server_thread.start()
 
 # with xmlrpc.client.ServerProxy(hosts) as proxy:
 all_peers_list = [xmlrpc.client.ServerProxy(address) for address in all_peers_address_list]
+in_the_middle_of_election = False
 
 print("I'm peer number", local_peer_index, ".")
 print_all_peers_ordered_list()
 leader_index = len(all_peers_list) - 1
 
-lock = threading.Lock()
+lock = threading.Lock
 
 time.sleep(5)
 
@@ -97,8 +105,8 @@ while True:
     if (leader_index != local_peer_index):
         try:
             print("About to send status request.")
-            with lock:
-                all_peers_list[leader_index].receive_status_request()
+            
+            all_peers_list[leader_index].receive_status_request()
             print("\nPeer", leader_index, "is ok.")
         except:
             print("\nPeer", leader_index, "found dead at the scene.\n")
