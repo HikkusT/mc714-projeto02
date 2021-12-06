@@ -7,13 +7,15 @@ import time
 import threading
 from datetime import datetime
 import queue
+import random
 
 class Event(NamedTuple):
     id: int
     timestamp: int
+    message: str
 
     def __str__(self):
-        return f'Event on timestamp {self.timestamp} from {self.id}'
+        return f'Event {self.message} (Timestamp: {self.timestamp} Id: {self.id})'
 
     def __lt__(self, other):
         if self.timestamp != other.timestamp:
@@ -28,6 +30,7 @@ my_port = int(sys.argv[3]) if len(sys.argv) > 3 else 8000
 
 # Constants
 number_of_iterations = 5
+list_of_words= ['price', 'effect', 'friendly', 'soup', 'compact', 'buy', 'valid', 'celebration', 'cigarette', 'purpose', 'brake', 'panic', 'chart', 'abridge', 'ambiguity', 'division', 'dismissal', 'nose', 'battle', 'extent', 'height', 'village', 'childish', 'chord', 'packet', 'clearance', 'blind', 'frequency', 'job', 'determine', 'low', 'sport', 'exaggerate', 'knot', 'vacuum', 'company', 'invite', 'south', 'chip', 'monarch', 'compose', 'deck', 'hardware', 'senior', 'slump', 'leaflet', 'counter', 'recycle', 'arise', 'dividend']
 logs_to_show = []
 
 # Local state
@@ -50,18 +53,18 @@ def consume_event_queue():
             break
 
 # Listeners
-def receive_event(id, timestamp):
+def receive_event(id, timestamp, message):
     global current_time
     current_time = max(timestamp, current_time) + 1
 
-    event = Event(id, timestamp)
+    event = Event(id, timestamp, message)
     if 'receive' in logs_to_show:
         print(f'[Receive] Received {event}')
     event_queue.append(event)
     acks_to_broadcast.put(event)
 
-def receive_ack(sender_id, id_of_event, timestamp_of_event):
-    event = Event(id_of_event, timestamp_of_event)
+def receive_ack(sender_id, id_of_event, timestamp_of_event, message_of_event):
+    event = Event(id_of_event, timestamp_of_event, message_of_event)
     if 'ack' in logs_to_show:
         print(f'[Ack] Received ack from {sender_id} about {event}')
 
@@ -72,21 +75,21 @@ def health_check():
     return True
 
 # Senders
-def broadcast_event():
+def broadcast_event(message):
     global current_time
     current_time += 1
 
-    event = Event(my_id, current_time)
+    event = Event(my_id, current_time, message)
     if 'send' in logs_to_show:
         print(f'[Send] Broadcasting {event}')
     for peer in peers:
         with lock:
-            peer.receive_event(event.id, event.timestamp)
+            peer.receive_event(event.id, event.timestamp, event.message)
 
 def broadcast_ack(event):
     for peer in peers:
         with lock:
-            peer.receive_ack(my_id, event.id, event.timestamp)
+            peer.receive_ack(my_id, event.id, event.timestamp, event.message)
 
 def wait_all_peers_ready():
     non_ready_peers = peers.copy()
@@ -127,5 +130,5 @@ print("Start!")
 
 
 for iteration in range(number_of_iterations):
-    broadcast_event()
+    broadcast_event(random.choice(list_of_words))
     time.sleep(0.001)
