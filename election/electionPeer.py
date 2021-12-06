@@ -21,12 +21,10 @@ def start_election():
     print("\nPeer", local_peer_index, "is starting an election.")
     for i in range(local_peer_index + 1, len(all_peers_list)):
         try:
-            print("About to send receive election request")
             with communication_lock:
                 all_peers_list[i].receive_election_request()
             with lock:
                 in_the_middle_of_election = False
-            print("sent receive election request")
             return
         except Exception as e:
             print(e)
@@ -49,8 +47,6 @@ def announce_as_leader():
     for i in range(len(all_peers_list)):
         if i != local_peer_index:
             try:
-                print("About to send leader announcement request")
-
                 all_peers_list[i].receive_leader_announcement(local_peer_index)
                 print("Peer", i, "acknowledge your power.")
             except:
@@ -107,7 +103,6 @@ while True:
     time.sleep(5)
     if (leader_index != local_peer_index):
         try:
-            print("About to send status request.")
             with communication_lock:
                 all_peers_list[leader_index].receive_status_request()
             print("\nPeer", leader_index, "is ok.")
