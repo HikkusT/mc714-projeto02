@@ -11,20 +11,19 @@ import time
 # 1 -> peer adress list
 
 def start_election():
-    with lock:
-        print("\nPeer", local_peer_index, "is starting an election.")
-        for i in range(local_peer_index + 1, len(all_peers_list)):
-            try:
-                print("About to send receive election request")
-                all_peers_list[i].receive_election_request()
-                print("sent receive election request")
-                return
-            except Exception as e:
-                print(e)
-                print("Peer", i, "is down.")
-        
-        print()
-        announce_as_leader()
+    print("\nPeer", local_peer_index, "is starting an election.")
+    for i in range(local_peer_index + 1, len(all_peers_list)):
+        try:
+            print("About to send receive election request")
+            all_peers_list[i].receive_election_request()
+            print("sent receive election request")
+            return
+        except Exception as e:
+            print(e)
+            print("Peer", i, "is down.")
+    
+    print()
+    announce_as_leader()
 
 def receive_election_request():
     try:
@@ -97,8 +96,7 @@ while True:
     if (leader_index != local_peer_index):
         try:
             print("About to send status request.")
-            with lock:
-                all_peers_list[leader_index].receive_status_request()
+            all_peers_list[leader_index].receive_status_request()
             print("\nPeer", leader_index, "is ok.")
         except:
             print("\nPeer", leader_index, "found dead at the scene.\n")
