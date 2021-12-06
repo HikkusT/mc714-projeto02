@@ -25,6 +25,9 @@ def receive_key():
     global hasKey
     hasKey = True
 
+def health_check():
+    return True
+
 def pass_key():
     global hasKey
     if (hasKey):
@@ -37,13 +40,20 @@ def sum_1_variable():
 
 local_server = SimpleXMLRPCServer(("", 8000), allow_none=True, logRequests=False)
 local_server.register_function(receive_key)
+local_server.register_function(health_check)
 server_thread = threading.Thread(target=local_server.serve_forever)
 server_thread.start()
 
-print("Starting client...")
-# with xmlrpc.client.ServerProxy(hosts) as proxy:
 next_peer = xmlrpc.client.ServerProxy(next_peer_address)
 server =  xmlrpc.client.ServerProxy(server_address)
+
+while True:
+    try:
+        next_peer.health_check()
+        break
+    except:
+        pass
+print("Starting counter!")
 
 i = 0
 
@@ -51,7 +61,7 @@ i = 0
 #     sum_1_variable()
 #     i += 1
 
-while i < 600:
+while True:
     if (hasKey):
         sum_1_variable()
         i+= 1
