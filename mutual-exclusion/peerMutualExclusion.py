@@ -57,10 +57,6 @@ print("Starting counter!")
 
 i = 0
 
-# while i < 3000:
-#     sum_1_variable()
-#     i += 1
-
 while True:
     if (hasKey):
         sum_1_variable()
