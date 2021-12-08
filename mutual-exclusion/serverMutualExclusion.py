@@ -1,9 +1,6 @@
 from xmlrpc.server import SimpleXMLRPCServer
-import xmlrpc.client
-import sys
 import time
 import threading
-import random
 
 common_variable = 0
 set_count = 0

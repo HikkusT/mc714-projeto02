@@ -2,9 +2,7 @@ from xmlrpc import server
 from xmlrpc.server import SimpleXMLRPCServer
 import xmlrpc.client
 import sys
-import time
 import threading
-import random
 import urllib.request
 
 

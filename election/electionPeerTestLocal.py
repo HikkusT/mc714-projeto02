@@ -59,9 +59,6 @@ def print_all_peers_ordered_list():
     for i in range(len(all_peers_address_list)):
         print(i, " -> ", all_peers_address_list[i])
 
-# external_address = urllib.request.urlopen('https://api.ipify.org').read().decode('utf8')
-# external_address = "http://" + external_address + ":8000/"
-
 print()
 local_peer_port = sys.argv[2]
 others_peers_address_list = sys.argv[1].split(',')
